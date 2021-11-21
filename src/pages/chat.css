@@ -1,0 +1,14 @@
+.chat-page {
+    display: flex;
+    flex-direction: row;
+}
+
+button.newmsg-btn {
+    height: 56px;
+    margin-left: 5px;
+}
+
+.messages {
+    height: 60%;
+    overflow-y: auto;
+}

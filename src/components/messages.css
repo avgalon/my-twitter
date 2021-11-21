@@ -1,0 +1,12 @@
+li.MuiListItem-root {
+    background-color: rgb(234, 238, 243);
+}
+li{
+    margin: 10px;
+    border-radius: 5px;
+    border: 1px solid silver;
+}
+.messages {
+    height: 500px;
+    overflow-y: auto;
+}

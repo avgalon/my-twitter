@@ -1,25 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
 import './App.css';
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import Chat from "./pages/chat";
+import Join from "./pages/join";
 
 function App() {
+  const [siteLoaded, setSiteLoaded] = useState(false)
+
+  useEffect(() => {
+    setSiteLoaded(true);
+  }, [setSiteLoaded]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div className={`App${siteLoaded ? ' site_loaded' : ''}`}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/chat/:name/:room" element={<Chat/>}>
+            </Route>
+            <Route path="/" element={<Join/>}>
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </div>
   );
 }
 
