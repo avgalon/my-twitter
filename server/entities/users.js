@@ -31,20 +31,25 @@ class Users {
     }
 
     followUser(followerUserId, followingUserId){
-        const userToFollow = this.users.filter((user) => user.id === followingUserId)[0];
-        userToFollow.followers.push(followerUserId);
-        const FollowingUser = this.users.filter((user) => user.id === followerUserId)[0];
-        FollowingUser.following.push(followingUserId);
+        const userToFollow = this.users.find((user) => user.id === followingUserId);
+        if (userToFollow.followers.find(follower => follower === followerUserId) === undefined) {
+            userToFollow.followers.push(followerUserId);
+            const FollowingUser = this.users.find((user) => user.id === followerUserId);
+            FollowingUser.following.push(followingUserId);
+        }
     }
 
     unfollowUser(followerUserId, followingUserId){
-        const userToFollow = this.users.filter((user) => user.id === followingUserId)[0];
-        const followerIndex = userToFollow.followers.indexOf(followerUserId);
-        userToFollow.followers.splice(followerIndex, 1);
+        const userToUnfollow = this.users.find((user) => user.id === followingUserId);
+        const unfollowerIndex = userToUnfollow.followers.indexOf(followerUserId);
 
-        const FollowingUser = this.users.filter((user) => user.id === followerUserId)[0];
-        const FollowingUserIndex = FollowingUser.following.indexOf(followingUserId);
-        FollowingUser.following.splice(FollowingUserIndex, 1);
+        if (unfollowerIndex >= 0) {
+            userToUnfollow.followers.splice(unfollowerIndex, 1);
+
+            const FollowingUser = this.users.find((user) => user.id === followerUserId);
+            const FollowingUserIndex = FollowingUser.following.indexOf(followingUserId);
+            FollowingUser.following.splice(FollowingUserIndex, 1);
+        }
     }
 
     getUserFollowers(userId) {

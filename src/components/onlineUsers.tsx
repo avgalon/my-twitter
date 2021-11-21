@@ -31,6 +31,18 @@ const OnlineUsers = (props: Props) => {
             .then(data => console.log(data));
     }
 
+    const unfollowUser = (userToFollow: string) => {
+        const currentUser = props.users.find(user => user.name === props.currentUserName);
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUser!.id, unfollow: userToFollow })
+        };
+        fetch('http://localhost:8080/unfollow', requestOptions)
+            .then(response => response.json())
+            .then(data => console.log(data));
+    }
+
     return (
         <div className="activeUsers">
             <h2 className="headline">
@@ -51,8 +63,16 @@ const OnlineUsers = (props: Props) => {
                             }/>
                             {props.currentUserName !== user.name && <ListItemIcon>
                                 <FollowTheSigns onClick={() => followUser(user.id)}/>
-                                ({user.followers.length})
                             </ListItemIcon>}
+                            {user.followers.length > 0 && <ListItemIcon>
+                                <FollowTheSigns  style={{ color: 'red' }} onClick={() => unfollowUser(user.id)}/>
+                            </ListItemIcon>}
+                            <ListItemText primary={
+                                <React.Fragment>
+                                    <Typography sx={{display: 'inline', lineHeight: '50px'}} />
+                                    ({user.followers.length})
+                                </React.Fragment>
+                            }/>
                         </ListItem>))}
                         </List>
             </div>

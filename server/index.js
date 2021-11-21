@@ -1,5 +1,6 @@
 const path = require('path');
 const express = require('express');
+const bodyParser = require("body-parser")
 const http = require('http');
 const socketIO = require('socket.io');
 
@@ -99,14 +100,22 @@ app.use(function(req, res, next) {
     next();
 });
 
+app.use(bodyParser.urlencoded({
+    extended:true
+}));
+
+app.use(express.json({
+    type: "*/*"
+}))
+
 app.post('/follow', (req, res) => {
-    const user_id = req.userId;
-    const follow = req.follow;
-    console.log('request', req);
+    const userId = req.body.userId;
+    const follow = req.body.follow;
+
     try {
-        users.followUser(user_id, follow);
+        users.followUser(userId, follow);
         io.to(defaultRoom).emit('updateUserList', users.getUserList(defaultRoom));
-        res.send({ ok: `User ${user_id} is following user ${follow}`})
+        res.send({ ok: `User ${userId} is following user ${follow}`})
     }
     catch(error) {
         res.send({ error });
@@ -114,13 +123,12 @@ app.post('/follow', (req, res) => {
 })
 
 app.post('/unfollow', (req, res) => {
-    const user_id = req.user._id;
-    const unfollow = req.body.follow_id;
-    console.log('request', req);
+    const userId = req.body.userId;
+    const unfollow = req.body.unfollow;
     try {
-        users.unfollowUser(user_id, unfollow);
+        users.unfollowUser(userId, unfollow);
         io.to(defaultRoom).emit('updateUserList', users.getUserList(defaultRoom));
-        res.send({ ok: `User ${user_id} is following user ${unfollow}`})
+        res.send({ ok: `User ${userId} is following user ${unfollow}`})
     }
     catch(error) {
         res.send({ error });
