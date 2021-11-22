@@ -4,7 +4,7 @@ import avatar from '../assets/avatar.png'
 import ListItemIcon from '@mui/material/ListItemIcon';
 import {FollowTheSigns} from "@mui/icons-material";
 
-interface User {
+export interface User {
     name: string;
     id: string;
     room: string;
@@ -49,7 +49,7 @@ const OnlineUsers = (props: Props) => {
                 Online users
             </h2>
             <div id="users">
-                <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                <List sx={{ width: '95%', bgcolor: 'background.paper' }}>
                     {props.users.map((user: User, index: number) => (
                         <ListItem alignItems="flex-start" key={user.id}>
                             <ListItemAvatar>

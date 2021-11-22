@@ -32,6 +32,10 @@ const Join = () => {
         }
     }
 
+    const onTextChanged = (event: ChangeEvent<HTMLElement>) => {
+        setName((event.target as HTMLInputElement).value);
+    }
+
     const join = () => {
         if (name && room) {
             history(`/chat/${name}/${room}`);
@@ -47,7 +51,7 @@ const Join = () => {
                     autoComplete="off"
                     name="name"
                     value={name}
-                    onChange={inputUpdate.bind(this)}
+                    onChange={(event) => onTextChanged(event)}
                     className="join-name"
                 />
                 <button type="submit" className="join-button">

@@ -56,8 +56,8 @@ io.on('connection', (socket) => {
         io.to(params.room).emit('updateUserList', users.getUserList(params.room));
         console.log(`user name [${params.name}] id [${socket.id}] is connected`)
         // emit an event to update the client state with a new message
-        socket.emit('newMessage', generateMessage('Admin', params.room, 'Welcome to the chat app.'));
-        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', params.room, `${params.name} has joined.`));
+        //socket.emit('newMessage', generateMessage('Admin', params.room, 'Welcome to the chat app.'));
+        //socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', params.room, `${params.name} has joined.`));
 
         callback();
     });
@@ -92,6 +92,7 @@ io.on('connection', (socket) => {
 
 });
 
+// Handle CORS
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');

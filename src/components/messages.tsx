@@ -18,9 +18,12 @@ export interface Message {
 interface Props {
     messages: Message[];
     room: string;
+    currentUserId: string;
+    likeMessage: (messageId: number) => void;
 }
 
 const Messages = (props: Props) => {
+
     return (
         <div className="messages">
             <div id="list">
@@ -42,8 +45,14 @@ const Messages = (props: Props) => {
                                 }
                             />
                             <ListItemIcon>
-                                <ThumbUp />
+                                <ThumbUp onClick={() => props.likeMessage(message.id)}/>
                             </ListItemIcon>
+                            <ListItemText primary={
+                                <React.Fragment>
+                                    <Typography sx={{display: 'inline', lineHeight: '50px'}} />
+                                    ({message.likes.length})
+                                </React.Fragment>
+                            }/>
                         </ListItem>
                     ))}
                 </List>

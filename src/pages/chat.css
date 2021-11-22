@@ -1,6 +1,12 @@
-.chat-page {
+.layout {
     display: flex;
     flex-direction: row;
+    height: 100vh;
+}
+.menu, .feed, .users {
+    margin: 5px;
+    border: 1px black solid;
+    flex-grow: 1;
 }
 
 button.newmsg-btn {
