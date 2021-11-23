@@ -9,9 +9,22 @@ class Users {
         return user;
     }
 
+    removeUserByName(name) {
+        const user = this.getUserByName(name);
 
-    removeUser(id) {
-        const user = this.getUser(id);
+        if(user){
+            this.users = this.users.filter(user => user.name !== name);
+        }
+
+        return user;
+    }
+
+    getUserByName(name) {
+        return this.users.filter((user) => user.name === name)[0];
+    }
+
+    removeUserById(id) {
+        const user = this.getUserById(id);
 
         if(user){
             this.users = this.users.filter(user => user.id !== id);
@@ -20,7 +33,7 @@ class Users {
         return user;
     }
 
-    getUser(id) {
+    getUserById(id) {
         return this.users.filter((user) => user.id === id)[0];
     }
 

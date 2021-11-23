@@ -1,4 +1,4 @@
-import {Avatar, List, ListItem, ListItemAvatar, ListItemText, Typography} from "@mui/material";
+import {Avatar, Button, List, ListItem, ListItemAvatar, ListItemText, Typography} from "@mui/material";
 import React from "react";
 import avatar from '../assets/avatar.png'
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -45,9 +45,6 @@ const OnlineUsers = (props: Props) => {
 
     return (
         <div className="activeUsers">
-            <h2 className="headline">
-                Online users
-            </h2>
             <div id="users">
                 <List sx={{ width: '95%', bgcolor: 'background.paper' }}>
                     {props.users.map((user: User, index: number) => (
@@ -62,10 +59,11 @@ const OnlineUsers = (props: Props) => {
                                 </React.Fragment>
                             }/>
                             {props.currentUserName !== user.name && <ListItemIcon>
-                                <FollowTheSigns onClick={() => followUser(user.id)}/>
-                            </ListItemIcon>}
-                            {user.followers.length > 0 && <ListItemIcon>
-                                <FollowTheSigns  style={{ color: 'red' }} onClick={() => unfollowUser(user.id)}/>
+                                <Button
+                                    onClick={() => user.followers.length === 0 ? followUser(user.id) : unfollowUser(user.id)}
+                                    variant="contained">
+                                    {user.followers.length === 0 ? 'Follow' : 'Unfollow'}
+                                </Button>
                             </ListItemIcon>}
                             <ListItemText primary={
                                 <React.Fragment>

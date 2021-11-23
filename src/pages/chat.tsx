@@ -1,25 +1,27 @@
-import React, {ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState} from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, {ChangeEvent, FormEvent, SyntheticEvent, useCallback, useEffect, useRef, useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import io, {Socket} from 'socket.io-client';
 import OnlineUsers, {User} from '../components/onlineUsers';
 import Messages, {Message} from '../components/messages';
 import moment from 'moment';
 import {useParams} from "react-router";
 import SendIcon from '@mui/icons-material/Send';
-import {ArrowBackIos} from "@mui/icons-material";
-import {Box, Button, Drawer, Tab, Tabs, TextField} from "@mui/material";
+import {Box, Tab, Tabs, TextField} from "@mui/material";
 
+import TabPanel from '../components/tab-panel';
+
+import "../assets/scroll.css";
 import "./chat.css";
+
 
 const Chat = () => {
     const serverURL = 'http://localhost:8080';
     const [users, setUsers] = useState([]);
     const [messages, setMessages] = useState([]);
     const [newMsg, setNewMsg] = useState('');
-    const [menuOpen, setMenuOpen] = useState(true);
     const [correntTab, setCorrentTab] = React.useState(0);
 
-    const handleChange = (event: ChangeEvent<HTMLElement>, newValue: number) => {
+    const handleChange = (event: SyntheticEvent<Element, Event>, newValue: any) => {
         setCorrentTab(newValue);
     };
     let history = useNavigate();
@@ -32,18 +34,13 @@ const Chat = () => {
         socketRef.current = io(serverURL);
     }, [])
 
-  /*  // @ts-ignore
-    useEffect(() => {
-        const newSocket: Socket = io(serveURL);
-        // @ts-ignore
-        setSocket(newSocket);
-        return () => newSocket.close();
-    }, [setSocket]);*/
-
     useEffect(() => {
         handleSocket();
         const socket = socketRef.current;
+        window.addEventListener("beforeunload", onPageUnload);
+
         return () => {
+            window.removeEventListener("beforeunload", onPageUnload);
             const param = {
                 room: params.room
             }
@@ -68,7 +65,6 @@ const Chat = () => {
         });
 
         socket!.on('newMessage', (message: Message) => {
-            console.log('messages');
             const formattedTime = moment(message.createdDate).format('h:mm a');
 
             let newMsg: Message = {
@@ -76,18 +72,11 @@ const Chat = () => {
                 from: message.from,
                 room: message.room,
                 createdDate: formattedTime,
-                id: new Date().getUTCMilliseconds(),
+                id: Date.now() + Math.random(),
                 likes: []
             }
-            //let results: Message[] = [...messages, newMsg];
-            //results.push(newMsg);
             // @ts-ignore
-            setMessages((messages) => [...messages, newMsg]);
-
-            const msgArr = (messages as Message[]).filter(message => message.room === params.room);
-            if (msgArr.length > 3) {
-                // scrollToBottom();
-            }
+            setMessages((messages) => [newMsg, ...messages]);
         });
 
         socket!.on('disconnect', () => {
@@ -96,38 +85,15 @@ const Chat = () => {
         });
     },[]);
 
-        const scrollToBottom = () => {
-            // selectors
-            const listHeight = document.querySelector<HTMLElement>('.messages #list ul');
-            const messagesList = document.querySelector<HTMLElement>('.messages #list');
-            const newMessage = document.querySelector<HTMLElement>('.messages #list ul li:last-child');
-            // heights
-            const messagesWrapperHeight = listHeight!.clientHeight;
-            const clientHeight = messagesList!.clientHeight;
-            const scrollTop = messagesList!.scrollTop;
-            const scrollHeight = messagesList!.scrollHeight;
-            const newMessageHeight = newMessage!.offsetHeight;
-            const lastMessageHeight = (newMessage!.previousSibling as HTMLElement)!.offsetHeight;
-
-            if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
-                document!.querySelector('#list')!.scrollTo(0, messagesWrapperHeight)
-            }
-
-        }
+    const onPageUnload = (event: BeforeUnloadEvent) => {
+        const socket = socketRef.current;
+        event.preventDefault();
+        socket!.emit('leave', { room: params.room });
+        event.returnValue = '';
+    }
 
         const clearForm = () => {
             setNewMsg('');
-        }
-        const inputUpdate = (event: ChangeEvent<HTMLElement>) => {
-            const name = (event.target as HTMLInputElement).name;
-            const value = (event.target as HTMLInputElement).value;
-            switch (name){
-                case 'newMsg':
-                    setNewMsg(value);
-                    break;
-                default:
-                    throw `Unhandled input ${name}`;
-            }
         }
 
         const newMessageTextChange = (event: ChangeEvent<HTMLElement>) => {
@@ -144,82 +110,38 @@ const Chat = () => {
             clearForm();
         }
 
-        const getCurrentUserId = (): string => {
-            const currentUser = users.find((user: User) => user.name === params.name as string);
-            return currentUser ? (currentUser as User).id : '';
+        const getCurrentUser = (): User | undefined => {
+            return users.find((user: User) => user.name === params.name as string);
         }
 
-    const toggleDrawer = (open?: boolean) => (event: React.KeyboardEvent<HTMLElement> | React.MouseEvent<HTMLElement>) => {
-        if (event.type === 'keydown' && ((event as React.KeyboardEvent<HTMLElement>).key === 'Tab' || (event as React.KeyboardEvent<HTMLElement>).key === 'Shift')) {
-            return;
+    const likeMessage = (message: Message) => {
+        if(message.likes.findIndex(like => like === params.name as string) < 0) {
+            const newMessages = messages.map((msg: Message) => {
+                if (msg.id !== message.id) {
+                    return msg;
+                }
+                return {...msg, likes: [...msg.likes, params.name]}
+            });
+            // @ts-ignore
+            setMessages(newMessages)
         }
-
-        setMenuOpen(open === undefined ? !menuOpen : open);
-    };
-
-    const likeMessage = (messageId: number) => {
-        const newMessages = messages.map((message: Message) => {
-            if (message.id !== messageId){
-                return message;
-            }
-            return {...message, likes: [...message.likes, params.name]}
-        });
-        // @ts-ignore
-        setMessages(newMessages)
-        //messageToBLiked!.likes.push(props.currentUserId);
     }
 
-    const a11yProps = (index: number) => {
+    const getIdsAsProps = (index: number) => {
         return {
             id: `simple-tab-${index}`,
             'aria-controls': `simple-tabpanel-${index}`,
         };
     }
 
-        return (
-            <div className="layout">
-                <div className="menu">
-                    <Button onClick={toggleDrawer()}>{'menu'}</Button>
-                    <Drawer
-                        anchor={'left'}
-                        open={menuOpen}
-                        onClose={toggleDrawer(false)}
-                        hideBackdrop={true}
-                    >
-                        <div className="menu-content">
-                            <ul>
-                                <li>
-                            <Link to={`chat/${params.name as string}/General`}>
-                                Main Page
-                            </Link>
-                                </li>
-                            <li>
-                            <Link to={`/feeds/${params.name as string}`}>
-                                Personal Feed
-                            </Link>
-                            </li>
-                            <li>
-                            <Link to={`/feeds/${params.name as string}`}>
-                                Global Feed
-                            </Link>
-                            </li>
-                            <li>
-                            <Link to="/">
-                                Go back to join
-                            </Link>
-                            </li>
-                            <li>
-                            <label onClick={toggleDrawer()}>
-                                <ArrowBackIos></ArrowBackIos> Close menu
-                            </label>
-                            </li>
-                            </ul>
-                        </div>
-                    </Drawer>
+    const getMyFeeds = () => {
+        return messages.filter((message: Message) => message.from === params.name as string).sort((messageA: Message, messageB: Message) => messageB.likes.length - messageA.likes.length);
+    }
 
-                </div>
+    return (
+            <div className="layout">
                 <div className="feed">
-                    <form  className="newMsgForm">
+                    <form className="newMsgForm">
                         <TextField
                             required
                             id="outlined-required"
@@ -234,44 +156,28 @@ const Chat = () => {
                             <SendIcon/>
                         </button>
                     </form>
-                    <Messages messages={messages} currentUserId={getCurrentUserId()} room={params.room as string} likeMessage={likeMessage} />
+                    <Messages messages={messages} currentUser={getCurrentUser()} room={params.room as string} likeMessage={likeMessage} />
                 </div>
                 <div className="users">
-                   {/* <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs value={correntTab} onChange={handleChange} aria-label="basic tabs example">
-                            <Tab label="Item One" {...a11yProps(0)} />
-                            <Tab label="Item Two" {...a11yProps(1)} />
-                            <Tab label="Item Three" {...a11yProps(2)} />
+                            <Tab label="Online Users" {...getIdsAsProps(0)} />
+                            <Tab label="My Feeds" {...getIdsAsProps(1)} />
+                            <Tab label="All Feeds" {...getIdsAsProps(2)} />
                         </Tabs>
-                    </Box>*/}
-                    <OnlineUsers users={users} currentUserName={params.name as string}/>
+                    </Box>
+                    <div className="tabs-content-wrapper light-scroll">
+                        <TabPanel value={correntTab} index={0}>
+                            <OnlineUsers users={users} currentUserName={params.name as string}/>
+                        </TabPanel>
+                        <TabPanel value={correntTab} index={1}>
+                            <Messages messages={getMyFeeds()} currentUser={getCurrentUser()} room={params.room as string} likeMessage={likeMessage} />
+                        </TabPanel>
+                        <TabPanel value={correntTab} index={2}>
+                            <Messages messages={messages} currentUser={getCurrentUser()} room={params.room as string} likeMessage={likeMessage} />
+                        </TabPanel>
+                    </div>
                 </div>
-
-                {/*<OnlineUsers users={users} currentUserName={params.name as string}/>
-                <div className="messages-wrapper">
-                    <h1>
-                        <Link to="/">
-                            <ArrowBackIos/>
-                        </Link>
-                        {params.room}
-                    </h1>
-                    <form  className="newMsgForm">
-                        <TextField
-                            required
-                            id="outlined-required"
-                            label="Type your message"
-                            autoComplete="off"
-                            name="newMsg"
-                            value={newMsg}
-                            onChange={(event) => newMessageTextChange(event)}
-                            className="join-name"
-                        />
-                        <button className="newmsg-btn" onClick={(e) => newMessage(e)}>
-                            <SendIcon/>
-                        </button>
-                    </form>
-                    <Messages messages={messages} currentUserId={getCurrentUserId()} room={params.room as string} />
-                </div>*/}
             </div>
         )
 }

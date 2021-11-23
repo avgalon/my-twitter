@@ -4,6 +4,7 @@ import './messages.css';
 import {extractFirstLetter} from "../utils/first-letter";
 import {ThumbUp} from "@mui/icons-material";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import {User} from "./onlineUsers";
 
 export interface Message {
     id: number;
@@ -18,14 +19,14 @@ export interface Message {
 interface Props {
     messages: Message[];
     room: string;
-    currentUserId: string;
-    likeMessage: (messageId: number) => void;
+    currentUser: User | undefined;
+    likeMessage: (message: Message) => void;
 }
 
 const Messages = (props: Props) => {
 
     return (
-        <div className="messages">
+        <div className="messages light-scroll">
             <div id="list">
                 <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                     {props.messages.filter((message: Message) => message.room === props.room).map((message: Message, index: number) => (
@@ -44,9 +45,9 @@ const Messages = (props: Props) => {
                                     </React.Fragment>
                                 }
                             />
-                            <ListItemIcon>
-                                <ThumbUp onClick={() => props.likeMessage(message.id)}/>
-                            </ListItemIcon>
+                            {message.from !== props!.currentUser!.name && <ListItemIcon>
+                                <ThumbUp onClick={() => props.likeMessage(message)}/>
+                            </ListItemIcon>}
                             <ListItemText primary={
                                 <React.Fragment>
                                     <Typography sx={{display: 'inline', lineHeight: '50px'}} />

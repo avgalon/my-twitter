@@ -50,20 +50,18 @@ io.on('connection', (socket) => {
         }
 
         socket.join(params.room);
-        users.removeUser(socket.id);
+        users.removeUserById(socket.id);
+        users.removeUserByName(params.name);
         users.addUser(socket.id, params.name, params.room);
         // emit an event to update the client state with the new users list
         io.to(params.room).emit('updateUserList', users.getUserList(params.room));
         console.log(`user name [${params.name}] id [${socket.id}] is connected`)
-        // emit an event to update the client state with a new message
-        //socket.emit('newMessage', generateMessage('Admin', params.room, 'Welcome to the chat app.'));
-        //socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', params.room, `${params.name} has joined.`));
 
         callback();
     });
 
     socket.on('createMessage', (message, callback) => {
-        const user = users.getUser(socket.id);
+        const user = users.getUserById(socket.id);
         if (user && isRealString(message.text)) {
             let tempObj = generateMessage(user.name, user.room, message.text);
             io.to(user.room).emit('newMessage', tempObj);
@@ -75,18 +73,17 @@ io.on('connection', (socket) => {
     });
 
     socket.on('createLocationMsg', (coords) => {
-        const user = users.getUser(socket.id);
+        const user = users.getUserById(socket.id);
         if (user) {
             io.to(user.room).emit('createLocationMsg', generateLocationMessage(user.name, user.room, coords.lat, coords.lon));
         }
     });
 
     socket.on('disconnect', () => {
-        const user = users.removeUser(socket.id);
+        const user = users.removeUserById(socket.id);
 
         if (user) {
             io.to(user.room).emit('updateUserList', users.getUserList(user.room));
-            io.to(user.room).emit('newMessage', generateMessage('Admin', user.room, `${user.name} has left.`));
         }
     });
 

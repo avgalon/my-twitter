@@ -1,0 +1,40 @@
+.light-scroll::-webkit-scrollbar-button,
+.dark-scroll::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+.light-scroll::-webkit-scrollbar-corner,
+.dark-scroll::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+.light-scroll::-webkit-scrollbar,
+.dark-scroll::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.light-scroll::-webkit-scrollbar-thumb,
+.dark-scroll::-webkit-scrollbar-thumb,
+.light-scroll::-webkit-scrollbar-track,
+.dark-scroll::-webkit-scrollbar-track {
+    background-clip: padding-box;
+    border-radius: 9px;
+}
+
+.dark-scroll::-webkit-scrollbar-thumb {
+    background-color: #9e9e9e;
+}
+.dark-scroll::-webkit-scrollbar,
+.dark-scroll::-webkit-scrollbar-track {
+    background-color: #596269;
+}
+
+.light-scroll::-webkit-scrollbar-thumb {
+    background-color: #bdbdbd;
+}
+.light-scroll::-webkit-scrollbar,
+.light-scroll::-webkit-scrollbar-track {
+    background-color: #e0e0e0;
+}

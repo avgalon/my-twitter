@@ -2,11 +2,14 @@
     display: flex;
     flex-direction: row;
     height: 100vh;
+    background-color: black;
 }
 .menu, .feed, .users {
     margin: 5px;
-    border: 1px black solid;
+    border: 1px darkgrey solid;
+    border-radius: 5px;
     flex-grow: 1;
+    background-color: white;
 }
 
 button.newmsg-btn {
@@ -15,6 +18,15 @@ button.newmsg-btn {
 }
 
 .messages {
-    height: 60%;
+    height: calc(100% - 100px);
     overflow-y: auto;
+}
+
+.tabs-content-wrapper {
+    height: calc(100% - 60px);
+    overflow-y: auto;
+}
+
+.newMsgForm {
+    margin: 20px;
 }
