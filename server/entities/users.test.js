@@ -1,57 +1,52 @@
-var {Users} = require('./users');
+const {Users} = require('./users');
 
 describe('Users', () => {
-    var users;
+    let users;
 
     beforeEach(() => {
         users = new Users();
         users.users = [{
             id: '1',
-            name: 'Ash',
-            room: 'Baseball'
+            name: 'Alon',
+            room: 'General'
         },
         {
             id: '2',
-            name: 'Bill',
-            room: 'Baseball'
+            name: 'Harel',
+            room: 'General'
         },
         {
             id: '3',
-            name: 'Bob',
-            room: 'Football'
+            name: 'Lior',
+            room: 'General'
         }]
     });
 
     it('Should add new user', () => {
-        var users = new Users();
-        var user = {
+        const users = new Users();
+        const user = {
             id: '123',
             name: 'Joe',
-            room: 'Football'
+            room: 'General'
         }
-        var resUser = users.addUser(user.id, user.name, user.room);
+        const resUser = users.addUser(user.id, user.name, user.room);
         expect(users.users).toEqual([user]);
     });
 
-    it('Should return names for baseball', () => {
-        var userList = users.getUserList('Baseball');
-        expect(userList).toEqual(['Ash', 'Bill']);
-    });
-
-    it('Should return names for Football', () => {
-        var userList = users.getUserList('Football');
-        expect(userList).toEqual(['Bob']);
+    it('Should return names in General', () => {
+        const userList = users.getUserList('General');
+        expect(userList).toEqual(['Alon', 'Harel', 'Lior']);
     });
 
     it('Should find user', () => {
-        var userID = '2';
-        var user = users.getUser(userID);
+        const userID = '2';
+        const user = users.getUser(userID);
         expect(user.id).toBe(userID);
     });
 
     it('Should remove user', () => {
-        var userID = '1';
-        var user = users.removeUser(userID);
+        const userID = '1';
+        const user = users.removeUser(userID);
         expect(user.id).toBe(userID);
         expect(users.users.length).toBe(2);
     });

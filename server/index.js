@@ -4,7 +4,7 @@ const bodyParser = require("body-parser")
 const http = require('http');
 const socketIO = require('socket.io');
 
-const { generateMessage, generateLocationMessage } = require('./entities/message.js');
+const { generateMessage } = require('./entities/message.js');
 const { isRealString } = require('./entities/validation');
 const { Users } = require('./entities/users');
 const publicPath = path.join(__dirname, '../public');
@@ -21,30 +21,18 @@ const options = {
 const server = http.createServer(app);
 app.use(express.static(publicPath));
 
-
-
 const io = socketIO(server, options);
 const users = new Users();
 
 const defaultRoom = 'General';
 
-/**
- * When a connection to socket io is established
- */
 io.on('connection', (socket) => {
 
-    /**
-     * when leaving the room
-     */
     socket.on('leave', (params) => {
         socket.leave(params.room);
     });
 
-    /**
-     * When a user joins
-     */
     socket.on('join', (params, callback) => {
-
         if (!isRealString(params.name) || !isRealString(params.room)) {
             return callback('Bad request');
         }
@@ -70,13 +58,6 @@ io.on('connection', (socket) => {
             });
         }
         callback();
-    });
-
-    socket.on('createLocationMsg', (coords) => {
-        const user = users.getUserById(socket.id);
-        if (user) {
-            io.to(user.room).emit('createLocationMsg', generateLocationMessage(user.name, user.room, coords.lat, coords.lon));
-        }
     });
 
     socket.on('disconnect', () => {

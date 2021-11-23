@@ -39,8 +39,6 @@ class Users {
 
     getUserList(room) {
         return this.users.filter((user) => user.room === room);
-        /*const namesArr = users.map(user => user.name);
-        return namesArr*/
     }
 
     followUser(followerUserId, followingUserId){
@@ -64,11 +62,6 @@ class Users {
             FollowingUser.following.splice(FollowingUserIndex, 1);
         }
     }
-
-    getUserFollowers(userId) {
-        return this.users.filter((user) => user.id === userId)[0].followers;
-    }
-
 }
 
 module.exports = { Users }
