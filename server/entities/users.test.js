@@ -24,29 +24,29 @@ describe('Users', () => {
 
     it('Should add new user', () => {
         const users = new Users();
-        const user = {
+        const newUser = {
             id: '123',
             name: 'Joe',
             room: 'General'
         }
-        const resUser = users.addUser(user.id, user.name, user.room);
-        expect(users.users).toEqual([user]);
+        const resUser = users.addUser(newUser.id, newUser.name, newUser.room);
+        expect(users.getUserList(newUser.room).findIndex(user => user.id === newUser.id)).toEqual(users.users.length - 1);
     });
 
     it('Should return names in General', () => {
-        const userList = users.getUserList('General');
+        const userList = users.getUserList('General').map(user => user.name);
         expect(userList).toEqual(['Alon', 'Harel', 'Lior']);
     });
 
     it('Should find user', () => {
         const userID = '2';
-        const user = users.getUser(userID);
+        const user = users.getUserById(userID);
         expect(user.id).toBe(userID);
     });
 
     it('Should remove user', () => {
         const userID = '1';
-        const user = users.removeUser(userID);
+        const user = users.removeUserById(userID);
         expect(user.id).toBe(userID);
         expect(users.users.length).toBe(2);
     });
