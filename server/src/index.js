@@ -1,4 +1,3 @@
-const path = require('path');
 const express = require('express');
 const bodyParser = require("body-parser")
 const http = require('http');
@@ -7,7 +6,6 @@ const socketIO = require('socket.io');
 const { generateMessage } = require('./entities/message.js');
 const { isRealString } = require('./entities/validation');
 const { Users } = require('./entities/users');
-const publicPath = path.join(__dirname, '../public');
 const PORT = process.env.PORT || 8080;
 
 const app = express();
@@ -19,7 +17,7 @@ const options = {
 };
 
 const server = http.createServer(app);
-app.use(express.static(publicPath));
+app.use(express.static("public"));
 
 const io = socketIO(server, options);
 const users = new Users();
