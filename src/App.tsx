@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Chat from "./pages/chat";
+import Twits from "./pages/twits";
 import Join from "./pages/join";
 import Feeds from "./pages/feeds";
 
@@ -16,7 +16,7 @@ function App() {
       <div className={`App${siteLoaded ? ' site_loaded' : ''}`}>
         <BrowserRouter>
           <Routes>
-            <Route path="/chat/:name/:room" element={<Chat/>}>
+            <Route path="/chat/:name/:room" element={<Twits/>}>
             </Route>
             <Route path="/" element={<Join/>}>
             </Route>

@@ -11,10 +11,9 @@ import {Box, Tab, Tabs, TextField} from "@mui/material";
 import TabPanel from '../components/tab-panel';
 
 import "../assets/scroll.css";
-import "./chat.css";
+import "./twits.css";
 
-
-const Chat = () => {
+const Twits = () => {
     const serverURL = 'http://localhost:8080';
     const [users, setUsers] = useState([]);
     const [messages, setMessages] = useState([]);
@@ -92,27 +91,27 @@ const Chat = () => {
         event.returnValue = '';
     }
 
-        const clearForm = () => {
-            setNewMsg('');
-        }
+    const clearForm = () => {
+        setNewMsg('');
+    }
 
-        const newMessageTextChange = (event: ChangeEvent<HTMLElement>) => {
-            setNewMsg((event.target as HTMLInputElement).value);
-        }
+    const newMessageTextChange = (event: ChangeEvent<HTMLElement>) => {
+        setNewMsg((event.target as HTMLInputElement).value);
+    }
 
-        const newMessage = (e: FormEvent) => {
-            const socket = socketRef.current;
-            e.preventDefault()
-            const obj = {
-                text: newMsg
-            };
-            socket!.emit('createMessage', obj, function (data: any) { });
-            clearForm();
-        }
+    const newMessage = (e: FormEvent) => {
+        const socket = socketRef.current;
+        e.preventDefault()
+        const obj = {
+            text: newMsg
+        };
+        socket!.emit('createMessage', obj, function (data: any) { });
+        clearForm();
+    }
 
-        const getCurrentUser = (): User | undefined => {
-            return users.find((user: User) => user.name === params.name as string);
-        }
+    const getCurrentUser = (): User | undefined => {
+        return users.find((user: User) => user.name === params.name as string);
+    }
 
     const likeMessage = (message: Message) => {
         if(message.likes.findIndex(like => like === params.name as string) < 0) {
@@ -135,7 +134,9 @@ const Chat = () => {
     }
 
     const getMyFeeds = () => {
-        return messages.filter((message: Message) => message.from === params.name as string).sort((messageA: Message, messageB: Message) => messageB.likes.length - messageA.likes.length);
+        return messages
+            .filter((message: Message) => message.from === params.name as string)
+            .sort((messageA: Message, messageB: Message) => messageB.likes.length - messageA.likes.length);
     }
 
     return (
@@ -181,4 +182,4 @@ const Chat = () => {
             </div>
         )
 }
-export default Chat
+export default Twits
